@@ -2,13 +2,12 @@ FROM node:15
 ENV HOST 0.0.0.0
 
 # Create app directory
-RUN mkdir -p /usr/via-timetable
+WORKDIR /timetable
 
-# Bundle app source
-COPY . ~/via-timetable
-WORKDIR ~/via-timetable
+COPY package*.json ./
+RUN npm ci
 
-RUN yarn
-RUN yarn build
+COPY . .
+RUN npm run build
 
-CMD [ "yarn", "serve" ]
+CMD [ "npm", "run", "serve" ]
