@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  api:
+    restart: always
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      - MONGODB_URL=mongodb://viaplanner:password@db:27017/viaplanner?authSource=admin
+
+  db:
+    restart: always
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: viaplanner
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - db-data:/data/db
+
+  timetable:
+    restart: always
+    build:
+      context: ./timetable
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+      - db
+    environment:
+      - PORT=3000
+      - VUE_APP_API_BASE_URL=/api
+
+  nginx:
+    restart: always
+    depends_on:
+      - timetable
+      - api
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+
+volumes:
+    db-data:
