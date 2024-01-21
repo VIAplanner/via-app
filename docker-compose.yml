@@ -13,12 +13,17 @@ services:
 
   db:
     restart: always
-    image: mongo
+    build:
+      context: ./mongo
+      dockerfile: Dockerfile
     environment:
-      MONGO_INITDB_ROOT_USERNAME: viaplanner
-      MONGO_INITDB_ROOT_PASSWORD: password
+      - MONGO_INITDB_ROOT_USERNAME=viaplanner
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=viaplanner
     volumes:
       - db-data:/data/db
+    ports:
+      - "27017:27017"
 
   timetable:
     restart: always
